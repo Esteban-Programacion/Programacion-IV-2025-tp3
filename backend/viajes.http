@@ -1,0 +1,68 @@
+@url=http://localhost:3000
+
+### Login
+# @name login
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "esteban",
+    "password": "hola123456"
+}
+
+###
+@token = {{login.response.body.token}}
+
+### Listar todos los viajes
+GET {{url}}/viajes
+Authorization: Bearer {{token}}
+
+### Obtener viaje por id
+GET {{url}}/viajes/1
+Authorization: Bearer {{token}}
+
+### Crear nuevo viaje
+POST {{url}}/viajes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "vehiculo_id": 2,
+    "conductor_id": 3,
+    "fecha_salida": "2025-11-12 08:00:00",
+    "fecha_llegada": "2025-11-12 16:30:00",
+    "origen": "Cordona",
+    "destino": "La Rioja",
+    "kilometros": 420,
+    "observaciones": "Viaje sin novedades"
+}
+
+### Actualizar viaje
+PUT {{url}}/viajes/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "fecha_llegada": "2025-11-12 17:00:00",
+    "observaciones": "Demora por lluvia"
+}
+
+### Eliminar viaje
+DELETE {{url}}/viajes/1
+Authorization: Bearer {{token}}
+
+### Consultar historial de viajes por vehiculo
+GET {{url}}/viajes/vehiculo/2
+Authorization: Bearer {{token}}
+
+### Consultar historial de viajes por conductor
+GET {{url}}/viajes/conductor/3
+Authorization: Bearer {{token}}
+
+### Calcular total de kilometros recorridos por vehiculo
+GET {{url}}/viajes/kilometros/vehiculo/2
+Authorization: Bearer {{token}}
+
+### Calcular total de kilometros recorridos por conductor
+GET {{url}}/viajes/kilometros/conductor/3
+Authorization: Bearer {{token}}

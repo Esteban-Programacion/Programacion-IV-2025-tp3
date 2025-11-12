@@ -1,0 +1,199 @@
+import express from "express";
+import { db } from "./db.js";
+import { body, query } from "express-validator";
+import { validarId, verificarValidaciones } from "./validaciones.js";
+import { verificarAutenticacion, verificarAutorizacion } from "./auth.js";
+
+const router = express.Router();
+
+
+router.get("/", verificarAutenticacion, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      "SELECT * FROM viaje ORDER BY id DESC"
+    );
+    res.json({ success: true, viajes: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error al obtener los viajes" });
+  }
+});
+
+
+router.get(
+  "/:id",
+  verificarAutenticacion,
+  validarId,
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [rows] = await db.execute("SELECT * FROM viaje WHERE id = ?", [id]);
+
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, message: "Viaje no encontrado" });
+      }
+
+      res.json({ success: true, viaje: rows[0] });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al obtener el viaje" });
+    }
+  }
+);
+
+
+router.post(
+  "/",
+  verificarAutenticacion,
+  verificarAutorizacion("admin"),
+  body("vehiculo_id", "Vehiculo invalido").isInt({ min: 1 }),
+  body("conductor_id", "Conductor invalido").isInt({ min: 1 }),
+  body("fecha_salida", "Fecha de salida invalida").isISO8601(),
+  body("fecha_llegada", "Fecha de llegada invalida").isISO8601(),
+  body("origen", "Origen invalido").isString().isLength({ min: 1, max: 100 }),
+  body("destino", "Destino invalido").isString().isLength({ min: 1, max: 100 }),
+  body("kilometros", "Kilometros invalidos").isFloat({ min: 0 }),
+  body("observaciones").optional().isString().isLength({ max: 255 }),
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const { vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones } = req.body;
+
+      const [result] = await db.execute(
+        "INSERT INTO viaje (vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones) VALUES (?,?,?,?,?,?,?,?)",
+        [vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones]
+      );
+
+      res.status(201).json({
+        success: true,
+        data: { id: result.insertId, vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones },
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al crear el viaje" });
+    }
+  }
+);
+
+
+router.put(
+  "/:id",
+  verificarAutenticacion,
+  verificarAutorizacion("admin"),
+  validarId,
+  body("vehiculo_id").optional().isInt({ min: 1 }),
+  body("conductor_id").optional().isInt({ min: 1 }),
+  body("fecha_salida").optional().isISO8601(),
+  body("fecha_llegada").optional().isISO8601(),
+  body("origen").optional().isString().isLength({ min: 1, max: 100 }),
+  body("destino").optional().isString().isLength({ min: 1, max: 100 }),
+  body("kilometros").optional().isFloat({ min: 0 }),
+  body("observaciones").optional().isString().isLength({ max: 255 }),
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const { vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones } = req.body;
+
+      const [result] = await db.execute(
+        "UPDATE viaje SET vehiculo_id=?, conductor_id=?, fecha_salida=?, fecha_llegada=?, origen=?, destino=?, kilometros=?, observaciones=? WHERE id=?",
+        [vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones, id]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Viaje no encontrado" });
+      }
+
+      res.json({ success: true, message: "Viaje actualizado correctamente" });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al actualizar el viaje" });
+    }
+  }
+);
+
+
+router.delete(
+  "/:id",
+  verificarAutenticacion,
+  verificarAutorizacion("admin"),
+  validarId,
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [result] = await db.execute("DELETE FROM viaje WHERE id = ?", [id]);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Viaje no encontrado" });
+      }
+
+      res.json({ success: true, message: "Viaje eliminado correctamente" });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al eliminar el viaje" });
+    }
+  }
+);
+
+
+router.get(
+  "/historial",
+  verificarAutenticacion,
+  query("vehiculo_id").optional().isInt({ min: 1 }),
+  query("conductor_id").optional().isInt({ min: 1 }),
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const { vehiculo_id, conductor_id } = req.query;
+      let sql = "SELECT * FROM viaje WHERE 1=1";
+      const params = [];
+
+      if (vehiculo_id) {
+        sql += " AND vehiculo_id = ?";
+        params.push(vehiculo_id);
+      }
+
+      if (conductor_id) {
+        sql += " AND conductor_id = ?";
+        params.push(conductor_id);
+      }
+
+      const [rows] = await db.execute(sql, params);
+      res.json({ success: true, historial: rows });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al obtener historial" });
+    }
+  }
+);
+
+
+router.get(
+  "/kilometros",
+  verificarAutenticacion,
+  query("vehiculo_id").optional().isInt({ min: 1 }),
+  query("conductor_id").optional().isInt({ min: 1 }),
+  verificarValidaciones,
+  async (req, res) => {
+    try {
+      const { vehiculo_id, conductor_id } = req.query;
+      let sql = "SELECT SUM(kilometros) AS total_kilometros FROM viaje WHERE 1=1";
+      const params = [];
+
+      if (vehiculo_id) {
+        sql += " AND vehiculo_id = ?";
+        params.push(vehiculo_id);
+      }
+
+      if (conductor_id) {
+        sql += " AND conductor_id = ?";
+        params.push(conductor_id);
+      }
+
+      const [rows] = await db.execute(sql, params);
+      const total = rows[0].total_kilometros || 0;
+
+      res.json({ success: true, total_kilometros: total });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al calcular kilometros" });
+    }
+  }
+);
+
+export default router;
