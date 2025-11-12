@@ -51,3 +51,51 @@ router.post(
     });
   }
 )
+
+router.put(
+  "/:id",
+  verificarAutenticacion,
+  verificarAutorizacion("admin"),
+  validarId,
+  body("marca").optional().isString().isLength({ max: 50 }),
+  body("modelo").optional().isString().isLength({ max: 50 }),
+  body("patente").optional().isString().isLength({ max: 20 }),
+  body("año").optional().isInt({ min: 1900, max: new Date().getFullYear() }),
+  body("capacidad_carga").optional().isFloat({ min: 0 }),
+  verificarValidaciones,
+  async (req, res) => {
+    const id = Number(req.params.id);
+    const { marca, modelo, patente, año, capacidad_carga } = req.body;
+
+    const [result] = await db.execute(
+      "UPDATE vehiculos SET marca=?, modelo=?, patente=?, año=?, capacidad_carga=? WHERE id=?",
+      [marca, modelo, patente, año, capacidad_carga, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Vehiculo no encontrado" });
+    }
+
+    res.json({ success: true, message: "Vehiculo actualizado correctamente" });
+  }
+);
+
+router.delete(
+  "/:id",
+  verificarAutenticacion,
+  verificarAutorizacion("admin"),
+  validarId,
+  verificarValidaciones,
+  async (req, res) => {
+    const id = Number(req.params.id);
+    const [result] = await db.execute("DELETE FROM vehiculos WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Vehiculo no encontrado" });
+    }
+
+    res.json({ success: true, message: "Vehiculo eliminado correctamente" });
+  }
+);
+
+export default router;
