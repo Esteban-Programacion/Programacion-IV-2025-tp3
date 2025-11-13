@@ -6,8 +6,8 @@ POST {{url}}/auth/login
 Content-Type: application/json
 
 {
-    "username": "esteban",
-    "password": "hola123456"
+    "email": "ricks@gmail.com",
+    "contraseña": "Rocks12"
 }
 
 ###
@@ -27,10 +27,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "username": "nuevoUser",
-    "apellido": "ricks",
-    "nombre": "Juan",
-    "password": "hola123456"
+    "nombre": "Enzo",
+    "email": "enzo@gmail.com",
+    "contraseña": "Rocks12"
 }
 
 ### Actualizar usuario
@@ -40,9 +39,9 @@ Content-Type: application/json
 
 {
     "nombre": "Juanfer",
-    "apellido": "quintero"
+    "email": "pepearg@gmail.com"
 }
 
 ### Eliminar usuario
-DELETE {{url}}/usuarios/3
+DELETE {{url}}/usuarios/1
 Authorization: Bearer {{token}}

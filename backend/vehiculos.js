@@ -26,7 +26,7 @@ router.get(
       const [rows] = await db.execute("SELECT * FROM vehiculos WHERE id = ?", [id]);
 
       if (rows.length === 0) {
-        return res.status(404).json({ success: false, message: "Vehículo no encontrado" });
+        return res.status(404).json({ success: false, message: "Vehiculo no encontrado" });
       }
 
       res.json({ success: true, vehiculo: rows[0] });
@@ -43,21 +43,21 @@ router.post(
   body("marca", "Marca invalida").isString().isLength({ max: 50 }),
   body("modelo", "Modelo invalido").isString().isLength({ max: 50 }),
   body("patente", "Patente invalida").isString().isLength({ max: 20 }),
-  body("anio", "Año inválido").isInt({ min: 1900, max: new Date().getFullYear() }),
+  body("año", "Año invalido").isInt({ min: 1900, max: new Date().getFullYear() }),
   body("capacidad_carga", "Capacidad de carga invalida").isFloat({ min: 0 }),
   verificarValidaciones,
   async (req, res, next) => {
     try {
-      const { marca, modelo, patente, anio, capacidad_carga } = req.body;
+      const { marca, modelo, patente, año, capacidad_carga } = req.body;
 
       const [result] = await db.execute(
-        "INSERT INTO vehiculos (marca, modelo, patente, anio, capacidad_carga) VALUES (?,?,?,?,?)",
-        [marca, modelo, patente, anio, capacidad_carga]
+        "INSERT INTO vehiculos (marca, modelo, patente, año, capacidad_carga) VALUES (?,?,?,?,?)",
+        [marca, modelo, patente, año, capacidad_carga]
       );
 
       res.status(201).json({
         success: true,
-        data: { id: result.insertId, marca, modelo, patente, anio, capacidad_carga },
+        data: { id: result.insertId, marca, modelo, patente, año, capacidad_carga },
       });
     } catch (err) {
       next(err);
@@ -73,7 +73,7 @@ router.put(
   body("marca").optional().isString().isLength({ max: 50 }),
   body("modelo").optional().isString().isLength({ max: 50 }),
   body("patente").optional().isString().isLength({ max: 20 }),
-  body("anio").optional().isInt({ min: 1900, max: new Date().getFullYear() }),
+  body("año").optional().isInt({ min: 1900, max: new Date().getFullYear() }),
   body("capacidad_carga").optional().isFloat({ min: 0 }),
   verificarValidaciones,
   async (req, res, next) => {

@@ -104,20 +104,7 @@ router.post("/login", async (req, res) => {
 
 export const verificarAutenticacion = passport.authenticate("jwt", { session: false });
 
+export const verificarAutorizacion = () => (req, res, next) => next();
 
-export const verificarAutorizacion = (rol) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Token no valido o expirado" });
-    }
-
-
-    if (req.user.rol !== rol) {
-      return res.status(403).json({ success: false, message: "Usuario no autorizado" });
-    }
-
-    next();
-  };
-};
 
 export default router;

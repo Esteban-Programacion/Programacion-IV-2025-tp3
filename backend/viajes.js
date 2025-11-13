@@ -7,17 +7,91 @@ import { verificarAutenticacion, verificarAutorizacion } from "./auth.js";
 const router = express.Router();
 
 
+router.get(
+  "/vehiculo/:id",
+  verificarAutenticacion,
+  validarId,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [rows] = await db.execute(
+        "SELECT * FROM viajes WHERE vehiculo_id = ? ORDER BY fecha_salida DESC",
+        [id]
+      );
+      res.json({ success: true, historial: rows });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al obtener historial por vehiculo" });
+    }
+  }
+);
+
+
+router.get(
+  "/conductor/:id",
+  verificarAutenticacion,
+  validarId,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [rows] = await db.execute(
+        "SELECT * FROM viajes WHERE conductor_id = ? ORDER BY fecha_salida DESC",
+        [id]
+      );
+      res.json({ success: true, historial: rows });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al obtener historial por conductor" });
+    }
+  }
+);
+
+
+router.get(
+  "/kilometros/vehiculo/:id",
+  verificarAutenticacion,
+  validarId,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [rows] = await db.execute(
+        "SELECT SUM(kilometros) AS total_kilometros FROM viajes WHERE vehiculo_id = ?",
+        [id]
+      );
+      res.json({ success: true, total_kilometros: rows[0].total_kilometros || 0 });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al calcular kilometros por vehiculo" });
+    }
+  }
+);
+
+
+router.get(
+  "/kilometros/conductor/:id",
+  verificarAutenticacion,
+  validarId,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const [rows] = await db.execute(
+        "SELECT SUM(kilometros) AS total_kilometros FROM viajes WHERE conductor_id = ?",
+        [id]
+      );
+      res.json({ success: true, total_kilometros: rows[0].total_kilometros || 0 });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al calcular kilometros por conductor" });
+    }
+  }
+);
+
+
+
 router.get("/", verificarAutenticacion, async (req, res) => {
   try {
-    const [rows] = await db.execute(
-      "SELECT * FROM viaje ORDER BY id DESC"
-    );
+    const [rows] = await db.execute("SELECT * FROM viajes ORDER BY id DESC");
     res.json({ success: true, viajes: rows });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error al obtener los viajes" });
   }
 });
-
 
 router.get(
   "/:id",
@@ -27,19 +101,16 @@ router.get(
   async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const [rows] = await db.execute("SELECT * FROM viaje WHERE id = ?", [id]);
-
+      const [rows] = await db.execute("SELECT * FROM viajes WHERE id = ?", [id]);
       if (rows.length === 0) {
         return res.status(404).json({ success: false, message: "Viaje no encontrado" });
       }
-
       res.json({ success: true, viaje: rows[0] });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error al obtener el viaje" });
     }
   }
 );
-
 
 router.post(
   "/",
@@ -56,23 +127,41 @@ router.post(
   verificarValidaciones,
   async (req, res) => {
     try {
-      const { vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones } = req.body;
+      const {
+        vehiculo_id,
+        conductor_id,
+        fecha_salida,
+        fecha_llegada,
+        origen,
+        destino,
+        kilometros,
+        observaciones,
+      } = req.body;
 
       const [result] = await db.execute(
-        "INSERT INTO viaje (vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones) VALUES (?,?,?,?,?,?,?,?)",
+        "INSERT INTO viajes (vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones) VALUES (?,?,?,?,?,?,?,?)",
         [vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones]
       );
 
       res.status(201).json({
         success: true,
-        data: { id: result.insertId, vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones },
+        data: {
+          id: result.insertId,
+          vehiculo_id,
+          conductor_id,
+          fecha_salida,
+          fecha_llegada,
+          origen,
+          destino,
+          kilometros,
+          observaciones,
+        },
       });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error al crear el viaje" });
     }
   }
 );
-
 
 router.put(
   "/:id",
@@ -91,10 +180,19 @@ router.put(
   async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const { vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones } = req.body;
+      const {
+        vehiculo_id,
+        conductor_id,
+        fecha_salida,
+        fecha_llegada,
+        origen,
+        destino,
+        kilometros,
+        observaciones,
+      } = req.body;
 
       const [result] = await db.execute(
-        "UPDATE viaje SET vehiculo_id=?, conductor_id=?, fecha_salida=?, fecha_llegada=?, origen=?, destino=?, kilometros=?, observaciones=? WHERE id=?",
+        "UPDATE viajes SET vehiculo_id=?, conductor_id=?, fecha_salida=?, fecha_llegada=?, origen=?, destino=?, kilometros=?, observaciones=? WHERE id=?",
         [vehiculo_id, conductor_id, fecha_salida, fecha_llegada, origen, destino, kilometros, observaciones, id]
       );
 
@@ -109,7 +207,6 @@ router.put(
   }
 );
 
-
 router.delete(
   "/:id",
   verificarAutenticacion,
@@ -119,79 +216,13 @@ router.delete(
   async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const [result] = await db.execute("DELETE FROM viaje WHERE id = ?", [id]);
-
+      const [result] = await db.execute("DELETE FROM viajes WHERE id = ?", [id]);
       if (result.affectedRows === 0) {
         return res.status(404).json({ success: false, message: "Viaje no encontrado" });
       }
-
       res.json({ success: true, message: "Viaje eliminado correctamente" });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error al eliminar el viaje" });
-    }
-  }
-);
-
-
-router.get(
-  "/historial",
-  verificarAutenticacion,
-  query("vehiculo_id").optional().isInt({ min: 1 }),
-  query("conductor_id").optional().isInt({ min: 1 }),
-  verificarValidaciones,
-  async (req, res) => {
-    try {
-      const { vehiculo_id, conductor_id } = req.query;
-      let sql = "SELECT * FROM viaje WHERE 1=1";
-      const params = [];
-
-      if (vehiculo_id) {
-        sql += " AND vehiculo_id = ?";
-        params.push(vehiculo_id);
-      }
-
-      if (conductor_id) {
-        sql += " AND conductor_id = ?";
-        params.push(conductor_id);
-      }
-
-      const [rows] = await db.execute(sql, params);
-      res.json({ success: true, historial: rows });
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error al obtener historial" });
-    }
-  }
-);
-
-
-router.get(
-  "/kilometros",
-  verificarAutenticacion,
-  query("vehiculo_id").optional().isInt({ min: 1 }),
-  query("conductor_id").optional().isInt({ min: 1 }),
-  verificarValidaciones,
-  async (req, res) => {
-    try {
-      const { vehiculo_id, conductor_id } = req.query;
-      let sql = "SELECT SUM(kilometros) AS total_kilometros FROM viaje WHERE 1=1";
-      const params = [];
-
-      if (vehiculo_id) {
-        sql += " AND vehiculo_id = ?";
-        params.push(vehiculo_id);
-      }
-
-      if (conductor_id) {
-        sql += " AND conductor_id = ?";
-        params.push(conductor_id);
-      }
-
-      const [rows] = await db.execute(sql, params);
-      const total = rows[0].total_kilometros || 0;
-
-      res.json({ success: true, total_kilometros: total });
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error al calcular kilometros" });
     }
   }
 );

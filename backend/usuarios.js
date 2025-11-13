@@ -41,17 +41,17 @@ router.post(
   verificarAutorizacion("admin"),
   body("nombre").isString().isLength({ min: 2 }).withMessage("Nombre invalido"),
   body("email").isEmail().withMessage("Email invalido"),
-  body("contrasena")
+  body("contraseña")
     .isLength({ min: 6 })
     .withMessage("La contrasena debe tener al menos 6 caracteres"),
   verificarValidaciones,
   async (req, res) => {
-    const { nombre, email, contrasena } = req.body;
+    const { nombre, email, contraseña } = req.body;
 
-    const hashedPassword = await bcrypt.hash(contrasena, 10);
+    const hashedPassword = await bcrypt.hash(contraseña, 10);
 
     const [result] = await db.execute(
-      "INSERT INTO usuarios (nombre, email, contrasena) VALUES (?, ?, ?)",
+      "INSERT INTO usuarios (nombre, email, contraseña) VALUES (?, ?, ?)",
       [nombre, email, hashedPassword]
     );
 

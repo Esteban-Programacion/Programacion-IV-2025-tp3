@@ -6,8 +6,8 @@ POST {{url}}/auth/login
 Content-Type: application/json
 
 {
-    "username": "esteban",
-    "password": "hola123456"
+    "email": "pepito@gmail.com",
+    "contraseña": "Hola1234"
 }
 
 ###
@@ -18,7 +18,7 @@ GET {{url}}/conductores
 Authorization: Bearer {{token}}
 
 ### Obtener conductor por id
-GET {{url}}/conductores/1
+GET {{url}}/conductores/2
 Authorization: Bearer {{token}}
 
 ### Crear nuevo conductor
@@ -27,22 +27,24 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "nombre": "Juanfer",
-    "apellido": "Quintero",
-    "dni": "09122018",
-    "licencia": "B2",
-    "fecha_vencimiento_licencia": "2018-12-09"
+  "nombre": "Enzo",
+  "apellido": "Fernandez",
+  "DNI": "40123436",
+  "licencia": "B11345",
+  "fecha_vencimiento_licencia": "2027-05-15"
 }
 
 ### Actualizar conductor
-PUT {{url}}/conductores/1
+PUT {{url}}/conductores/2
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "nombre": "Pity",
-    "apellido": "Martinez",
-    "fecha_vencimiento_licencia": "2027-05-12"
+   "nombre": "Pity",
+  "apellido": "Martinez",
+  "DNI": "40123444",
+  "licencia": "B13b345",
+  "fecha_vencimiento_licencia": "2025-05-15"
 }
 
 ### Eliminar conductor
