@@ -12,24 +12,38 @@ export const ModificarViaje = () => {
   const [values, setValues] = useState(null);
 
   const fetchDatos = useCallback(async () => {
-    const [resViaje, resVeh, resCond] = await Promise.all([
-      fetchAuth(`http://localhost:3000/viajes/${id}`),
-      fetchAuth("http://localhost:3000/vehiculos"),
-      fetchAuth("http://localhost:3000/conductores"),
-    ]);
+    try {
+      const [resViaje, resVeh, resCond] = await Promise.all([
+        fetchAuth(`http://localhost:3000/viajes/${id}`),
+        fetchAuth("http://localhost:3000/vehiculos"),
+        fetchAuth("http://localhost:3000/conductores"),
+      ]);
 
-    const dataViaje = await resViaje.json();
-    const dataVeh = await resVeh.json();
-    const dataCond = await resCond.json();
+      const dataViaje = await resViaje.json();
+      const dataVeh = await resVeh.json();
+      const dataCond = await resCond.json();
 
-    if (!resViaje.ok || !dataViaje.success) {
-      console.error("Error al obtener datos del viaje");
-      return;
+      if (!resViaje.ok || !dataViaje.success) {
+        console.error("Error al obtener datos del viaje");
+        return;
+      }
+
+      const viajeFormateado = {
+        ...dataViaje.viaje,
+        fecha_salida: dataViaje.viaje.fecha_salida
+          ? dataViaje.viaje.fecha_salida.split("T")[0]
+          : "",
+        fecha_llegada: dataViaje.viaje.fecha_llegada
+          ? dataViaje.viaje.fecha_llegada.split("T")[0]
+          : "",
+      };
+
+      setValues(viajeFormateado);
+      setVehiculos(dataVeh.vehiculos || []);
+      setConductores(dataCond.conductores || []);
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
     }
-
-    setValues(dataViaje.viaje);
-    setVehiculos(dataVeh.vehiculos || []);
-    setConductores(dataCond.conductores || []);
   }, [fetchAuth, id]);
 
   useEffect(() => {
@@ -39,19 +53,24 @@ export const ModificarViaje = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetchAuth(`http://localhost:3000/viajes/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+    try {
+      const response = await fetchAuth(`http://localhost:3000/viajes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok || !data.success) {
-      return window.alert("Error al modificar viaje");
+      if (!response.ok || !data.success) {
+        return window.alert("Error al modificar viaje");
+      }
+
+      navigate("/viajes");
+    } catch (error) {
+      console.error("Error al enviar formulario:", error);
+      window.alert("Error al modificar viaje");
     }
-
-    navigate("/viajes");
   };
 
   if (!values) return null;
@@ -126,6 +145,30 @@ export const ModificarViaje = () => {
               value={values.kilometros}
               onChange={(e) =>
                 setValues({ ...values, kilometros: e.target.value })
+              }
+            />
+          </label>
+
+          <label>
+            Fecha de salida
+            <input
+              type="date"
+              required
+              value={values.fecha_salida}
+              onChange={(e) =>
+                setValues({ ...values, fecha_salida: e.target.value })
+              }
+            />
+          </label>
+
+          <label>
+            Fecha de llegada
+            <input
+              type="date"
+              required
+              value={values.fecha_llegada}
+              onChange={(e) =>
+                setValues({ ...values, fecha_llegada: e.target.value })
               }
             />
           </label>

@@ -1,12 +1,12 @@
 import express from "express";
 import { db } from "./db.js";
-import { body, query } from "express-validator";
+import { body } from "express-validator";
 import { validarId, verificarValidaciones } from "./validaciones.js";
 import { verificarAutenticacion, verificarAutorizacion } from "./auth.js";
 
 const router = express.Router();
 
-
+// Historial de viajes por vehículo con datos del conductor
 router.get(
   "/vehiculo/:id",
   verificarAutenticacion,
@@ -15,7 +15,11 @@ router.get(
     try {
       const id = Number(req.params.id);
       const [rows] = await db.execute(
-        "SELECT * FROM viajes WHERE vehiculo_id = ? ORDER BY fecha_salida DESC",
+        `SELECT v.*, c.nombre AS conductor_nombre, c.apellido AS conductor_apellido, c.licencia AS conductor_licencia
+         FROM viajes v
+         JOIN conductores c ON v.conductor_id = c.id
+         WHERE v.vehiculo_id = ?
+         ORDER BY v.fecha_salida DESC`,
         [id]
       );
       res.json({ success: true, historial: rows });
@@ -25,7 +29,7 @@ router.get(
   }
 );
 
-
+// Historial de viajes por conductor con datos del vehículo
 router.get(
   "/conductor/:id",
   verificarAutenticacion,
@@ -34,7 +38,11 @@ router.get(
     try {
       const id = Number(req.params.id);
       const [rows] = await db.execute(
-        "SELECT * FROM viajes WHERE conductor_id = ? ORDER BY fecha_salida DESC",
+        `SELECT v.*, veh.marca, veh.modelo, veh.patente
+         FROM viajes v
+         JOIN vehiculos veh ON v.vehiculo_id = veh.id
+         WHERE v.conductor_id = ?
+         ORDER BY v.fecha_salida DESC`,
         [id]
       );
       res.json({ success: true, historial: rows });
@@ -44,7 +52,7 @@ router.get(
   }
 );
 
-
+// Calculo total de kilómetros por vehículo
 router.get(
   "/kilometros/vehiculo/:id",
   verificarAutenticacion,
@@ -63,7 +71,7 @@ router.get(
   }
 );
 
-
+// Calculo total de kilómetros por conductor
 router.get(
   "/kilometros/conductor/:id",
   verificarAutenticacion,
@@ -82,8 +90,7 @@ router.get(
   }
 );
 
-
-
+// Obtener todos los viajes
 router.get("/", verificarAutenticacion, async (req, res) => {
   try {
     const [rows] = await db.execute("SELECT * FROM viajes ORDER BY id DESC");
@@ -93,6 +100,7 @@ router.get("/", verificarAutenticacion, async (req, res) => {
   }
 });
 
+// Obtener un viaje por id
 router.get(
   "/:id",
   verificarAutenticacion,
@@ -112,6 +120,7 @@ router.get(
   }
 );
 
+// Crear un nuevo viaje
 router.post(
   "/",
   verificarAutenticacion,
@@ -163,6 +172,7 @@ router.post(
   }
 );
 
+// Actualizar un viaje
 router.put(
   "/:id",
   verificarAutenticacion,
@@ -207,6 +217,7 @@ router.put(
   }
 );
 
+// Eliminar un viaje
 router.delete(
   "/:id",
   verificarAutenticacion,

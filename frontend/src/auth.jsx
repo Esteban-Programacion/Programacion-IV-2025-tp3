@@ -32,7 +32,31 @@ export const AuthProvider = ({ children }) => {
       return { success: false };
     }
   };
+   const register = async (nombre, email, contraseña) => {
+    setError(null);
+    try {
+      const response = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, email, contraseña }),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Error al registrarse");
+      }
+
+      setToken(data.token);
+      setUsername(email);
+
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      return { success: false };
+    }
+  };
+  
   const logout = () => {
     setToken(null);
     setUsername(null);

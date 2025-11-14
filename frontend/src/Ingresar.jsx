@@ -10,7 +10,7 @@ export const Ingresar = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(email, contraseña); 
+    const result = await login(email, contraseña);
     if (result.success) {
       setOpen(false);
       setEmail("");
@@ -27,21 +27,21 @@ export const Ingresar = () => {
           <h2>Iniciar sesión</h2>
           <form onSubmit={handleSubmit}>
             <fieldset>
-              <label htmlFor="email">Correo electronico:</label>
+              <label htmlFor="login-email">Correo electrónico:</label>
               <input
-                id="email"
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
 
-              <label htmlFor="password">Contraseña:</label>
+              <label htmlFor="login-password">Contraseña:</label>
               <input
-                id="password"
+                id="login-password"
                 type="password"
-                value={contraseña} 
-                onChange={(e) => setContraseña(e.target.value)} 
+                value={contraseña}
+                onChange={(e) => setContraseña(e.target.value)}
                 required
               />
 

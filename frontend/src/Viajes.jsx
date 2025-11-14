@@ -68,7 +68,7 @@ export const Viajes = () => {
               <td>{v.kilometros}</td>
               <td>
                 <Link role="button" to={`/viajes/${v.id}`}>Ver</Link>
-                <Link to={`/viajes/${v.id}/modificar`}>Editar</Link>
+                <Link role="button" to={`/viajes/${v.id}/modificar`}>Editar</Link>
                 <button onClick={() => handleEliminar(v.id)}>Eliminar</button>
               </td>
             </tr>

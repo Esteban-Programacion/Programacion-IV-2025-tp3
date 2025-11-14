@@ -26,6 +26,8 @@ import { ModificarConductor } from "./ModificarConductor.jsx";
 import { Viajes } from "./Viajes.jsx";
 import { DetallesViaje } from "./DetallesViaje.jsx";
 import { CrearViaje } from "./CrearViaje.jsx";
+import { ModificarViaje } from "./ModificarViaje.jsx";
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -69,7 +71,7 @@ createRoot(document.getElementById("root")).render(
               }
             />
 
-            {/* Vehículos */}
+           
             <Route
               path="vehiculos"
               element={
@@ -103,7 +105,7 @@ createRoot(document.getElementById("root")).render(
               }
             />
 
-            {/* Conductores */}
+           
             <Route
               path="conductores"
               element={
@@ -159,6 +161,14 @@ createRoot(document.getElementById("root")).render(
               element={
                 <AuthPage>
                   <DetallesViaje />
+                </AuthPage>
+              }
+            />
+            <Route
+              path="viajes/:id/modificar"
+              element={
+                <AuthPage>
+                  <ModificarViaje />
                 </AuthPage>
               }
             />
