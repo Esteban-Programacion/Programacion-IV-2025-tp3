@@ -9,23 +9,23 @@ export const AuthProvider = ({ children }) => {
   const [username, setUsername] = useState(null);
   const [error, setError] = useState(null);
 
-  const login = async (username, password) => {
+  const login = async (email, contraseña) => {
     setError(null);
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, contraseña }),
       });
 
-      const session = await response.json();
+      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(session.message || "Error al inicio de sesion");
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Error al iniciar sesion");
       }
 
-      setToken(session.token);
-      setUsername(session.username);
+      setToken(data.token);
+      setUsername(email);
       return { success: true };
     } catch (err) {
       setError(err.message);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchAuth = async (url, options = {}) => {
-    if (!token) throw new Error("session no iniciada");
+    if (!token) throw new Error("Sesion no iniciada");
     return fetch(url, {
       ...options,
       headers: { ...options.headers, Authorization: `Bearer ${token}` },
@@ -68,7 +68,7 @@ export const AuthPage = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <h2>Ingresas para ver esta pagina</h2>;
+    return <h2>Ingresa para ver esta página</h2>;
   }
 
   return children;

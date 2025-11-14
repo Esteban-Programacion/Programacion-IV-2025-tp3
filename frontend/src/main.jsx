@@ -5,8 +5,8 @@ import "./index.css";
 
 import { Layout } from "./Layout.jsx";
 import { Home } from "./Home.jsx";
-import { AuthPage, AuthProvider, AuthRol } from "./Auth.jsx";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { AuthPage, AuthProvider } from "./Auth.jsx";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Usuarios } from "./Usuarios.jsx";
 import { DetallesUsuario } from "./DetallesUsuario.jsx";
@@ -48,9 +48,7 @@ createRoot(document.getElementById("root")).render(
               path="usuarios/crear"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <CrearUsuario />
-                  </AuthRol>
+                  <CrearUsuario />
                 </AuthPage>
               }
             />
@@ -66,14 +64,12 @@ createRoot(document.getElementById("root")).render(
               path="usuarios/:id/modificar"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <ModificarUsuario />
-                  </AuthRol>
+                  <ModificarUsuario />
                 </AuthPage>
               }
             />
 
-            {/* Vehiculos */}
+            {/* Vehículos */}
             <Route
               path="vehiculos"
               element={
@@ -86,9 +82,7 @@ createRoot(document.getElementById("root")).render(
               path="vehiculos/crear"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <CrearVehiculo />
-                  </AuthRol>
+                  <CrearVehiculo />
                 </AuthPage>
               }
             />
@@ -104,9 +98,7 @@ createRoot(document.getElementById("root")).render(
               path="vehiculos/:id/modificar"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <ModificarVehiculo />
-                  </AuthRol>
+                  <ModificarVehiculo />
                 </AuthPage>
               }
             />
@@ -124,9 +116,7 @@ createRoot(document.getElementById("root")).render(
               path="conductores/crear"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <CrearConductor />
-                  </AuthRol>
+                  <CrearConductor />
                 </AuthPage>
               }
             />
@@ -142,9 +132,7 @@ createRoot(document.getElementById("root")).render(
               path="conductores/:id/modificar"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <ModificarConductor />
-                  </AuthRol>
+                  <ModificarConductor />
                 </AuthPage>
               }
             />
@@ -162,9 +150,7 @@ createRoot(document.getElementById("root")).render(
               path="viajes/crear"
               element={
                 <AuthPage>
-                  <AuthRol rol="admin">
-                    <CrearViaje />
-                  </AuthRol>
+                  <CrearViaje />
                 </AuthPage>
               }
             />
@@ -176,7 +162,6 @@ createRoot(document.getElementById("root")).render(
                 </AuthPage>
               }
             />
-
           </Route>
         </Routes>
       </BrowserRouter>
