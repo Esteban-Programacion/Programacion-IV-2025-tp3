@@ -44,8 +44,8 @@ export const DetallesViaje = () => {
         <li><b>Fecha llegada:</b> {viaje.fecha_llegada}</li>
         <li><b>Observaciones:</b> {viaje.observaciones}</li>
       </ul>
-      <Link to={`/viajes/${viaje.id}/modificar`}>Editar</Link>{" "}
-      <Link to="/viajes">Volver al listado</Link>
+      <Link role="button" to={`/viajes/${viaje.id}/modificar`}>Editar</Link>{" "}
+      <Link role="button" to="/viajes">Volver al listado</Link>
     </article>
   );
 };

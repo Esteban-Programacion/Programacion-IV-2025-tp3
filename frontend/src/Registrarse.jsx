@@ -11,32 +11,43 @@ export const Registrarse = () => {
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMensaje("");
-    setError("");
+  e.preventDefault();
+  setMensaje("");
+  setError("");
 
-    try {
-      const response = await fetch("http://localhost:3000/auth/registrar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, email, contraseña }),
-      });
+  const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/;
+  if (!soloLetras.test(nombre)) {
+    setError("El nombre solo puede contener letras.");
+    return;
+  }
 
-      const data = await response.json();
+  if (contraseña.length < 6) {
+    setError("La contraseña debe tener al menos 6 caracteres.");
+    return;
+  }
 
-      if (!response.ok || !data.success) {
-        setError(data.message || data.error || "Error al registrarse");
-        return;
-      }
+  try {
+    const response = await fetch("http://localhost:3000/auth/registrar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre, email, contraseña }),
+    });
 
-      setMensaje("Resgistrado exitosamente.");
-      setNombre("");
-      setEmail("");
-      setContraseña("");
-    } catch (err) {
-      setError("No se pudo conectar con el servidor");
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      setError(data.message || data.error || "Error al registrarse");
+      return;
     }
-  };
+
+    setMensaje("Registrado exitosamente.");
+    setNombre("");
+    setEmail("");
+    setContraseña("");
+  } catch (err) {
+    setError("No se pudo conectar con el servidor");
+  }
+};
 
   return (
     <>

@@ -34,23 +34,45 @@ export const CrearViaje = () => {
     fetchOpciones();
   }, [fetchOpciones]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+   const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const response = await fetchAuth("http://localhost:3000/viajes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+  const salida = new Date(values.fecha_salida);
+  const llegada = new Date(values.fecha_llegada);
 
-    const data = await response.json();
+  if (isNaN(salida) || isNaN(llegada)) {
+    return window.alert("Debe ingresar fechas validas.");
+  }
 
-    if (!response.ok || !data.success) {
-      return window.alert("Error al crear viaje");
-    }
+  if (llegada < salida) {
+    return window.alert("La fecha de llegada no puede ser anterior a la fecha de salida.");
+  }
 
-    navigate("/viajes");
-  };
+  const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+
+  if (!soloLetras.test(values.origen)) {
+    return window.alert("El origen solo puede contener letras.");
+  }
+
+  if (!soloLetras.test(values.destino)) {
+    return window.alert("El destino solo puede contener letras.");
+  }
+
+  const response = await fetchAuth("http://localhost:3000/viajes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(values),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    return window.alert("Error al crear viaje");
+  }
+
+  navigate("/viajes");
+};
+
 
   return (
     <article>

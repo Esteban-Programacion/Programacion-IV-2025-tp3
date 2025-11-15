@@ -51,27 +51,48 @@ export const ModificarViaje = () => {
   }, [fetchDatos]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await fetchAuth(`http://localhost:3000/viajes/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+  const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
 
-      const data = await response.json();
+  if (!soloLetras.test(values.origen)) {
+    return window.alert("El campo origen solo puede contener letras.");
+  }
 
-      if (!response.ok || !data.success) {
-        return window.alert("Error al modificar viaje");
-      }
+  if (!soloLetras.test(values.destino)) {
+    return window.alert("El campo destino solo puede contener letras.");
+  }
 
-      navigate("/viajes");
-    } catch (error) {
-      console.error("Error al enviar formulario:", error);
-      window.alert("Error al modificar viaje");
+  const fechaSalida = new Date(values.fecha_salida);
+  const fechaLlegada = new Date(values.fecha_llegada);
+
+  if (isNaN(fechaSalida) || isNaN(fechaLlegada)) {
+    return window.alert("Debe ingresar fechas validas.");
+  }
+
+  if (fechaLlegada < fechaSalida) {
+    return window.alert("La fecha de llegada no puede ser anterior a la fecha de salida.");
+  }
+
+  try {
+    const response = await fetchAuth(`http://localhost:3000/viajes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return window.alert("Error al modificar viaje");
     }
-  };
+
+    navigate("/viajes");
+  } catch (error) {
+    console.error("Error al enviar formulario:", error);
+    window.alert("Error al modificar viaje");
+  }
+};
 
   if (!values) return null;
 
