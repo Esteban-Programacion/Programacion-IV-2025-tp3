@@ -61,8 +61,8 @@ export const Viajes = () => {
           {viajes.map((v) => (
             <tr key={v.id}>
               <td>{v.id}</td>
-              <td>{v.vehiculo_id}</td>
-              <td>{v.conductor_id}</td>
+              <td>{v.vehiculo_marca} </td>
+              <td>{v.conductor_nombre} {v.conductor_apellido}</td>
               <td>{v.origen}</td>
               <td>{v.destino}</td>
               <td>{v.kilometros}</td>

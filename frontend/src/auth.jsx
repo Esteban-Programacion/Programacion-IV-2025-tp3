@@ -92,7 +92,7 @@ export const AuthPage = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <h2>Ingresa para ver esta página</h2>;
+    return <h2>Ingresa para ver esta pagina</h2>;
   }
 
   return children;

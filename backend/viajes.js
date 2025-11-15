@@ -38,7 +38,11 @@ router.get(
     try {
       const id = Number(req.params.id);
       const [rows] = await db.execute(
-        `SELECT v.*, veh.marca, veh.modelo, veh.patente
+        `SELECT 
+            v.*,
+            veh.marca AS vehiculo_marca,
+            veh.modelo AS vehiculo_modelo,
+            veh.patente AS vehiculo_patente
          FROM viajes v
          JOIN vehiculos veh ON v.vehiculo_id = veh.id
          WHERE v.conductor_id = ?
@@ -52,7 +56,7 @@ router.get(
   }
 );
 
-// Calculo total de kilómetros por vehículo
+// Calculo total de kilometros por vehiculo
 router.get(
   "/kilometros/vehiculo/:id",
   verificarAutenticacion,
@@ -71,7 +75,7 @@ router.get(
   }
 );
 
-// Calculo total de kilómetros por conductor
+// Calculo total de kilometros por conductor
 router.get(
   "/kilometros/conductor/:id",
   verificarAutenticacion,
@@ -93,7 +97,19 @@ router.get(
 // Obtener todos los viajes
 router.get("/", verificarAutenticacion, async (req, res) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM viajes ORDER BY id DESC");
+    const [rows] = await db.execute(
+      `SELECT v.*, 
+              veh.marca AS vehiculo_marca,
+              veh.modelo AS vehiculo_modelo,
+              veh.patente AS vehiculo_patente,
+              c.nombre AS conductor_nombre,
+              c.apellido AS conductor_apellido
+       FROM viajes v
+       JOIN vehiculos veh ON veh.id = v.vehiculo_id
+       JOIN conductores c ON c.id = v.conductor_id
+       ORDER BY v.id DESC`
+    );
+
     res.json({ success: true, viajes: rows });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error al obtener los viajes" });
@@ -109,10 +125,25 @@ router.get(
   async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const [rows] = await db.execute("SELECT * FROM viajes WHERE id = ?", [id]);
+      const [rows] = await db.execute(
+        `SELECT v.*,
+                veh.marca AS vehiculo_marca,
+                veh.modelo AS vehiculo_modelo,
+                veh.patente AS vehiculo_patente,
+                c.nombre AS conductor_nombre,
+                c.apellido AS conductor_apellido,
+                c.dni AS conductor_dni
+         FROM viajes v
+         JOIN vehiculos veh ON veh.id = v.vehiculo_id
+         JOIN conductores c ON c.id = v.conductor_id
+         WHERE v.id = ?`,
+        [id]
+      );
+
       if (rows.length === 0) {
         return res.status(404).json({ success: false, message: "Viaje no encontrado" });
       }
+
       res.json({ success: true, viaje: rows[0] });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error al obtener el viaje" });

@@ -1,7 +1,7 @@
 export const Home = () => {
   return (
     <article>
-      <h1>Gestión de Vehículos, Conductores y Viajes</h1>
+      <h1>Gestion de Vehiculos, Conductores y Viajes</h1>
       <p>
         Bienvenido al sistema de transporte. 
       </p>
