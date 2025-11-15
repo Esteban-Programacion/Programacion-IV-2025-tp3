@@ -45,7 +45,7 @@ export const ModificarConductor = () => {
     return window.alert("El DNI solo puede contener numeros.");
   }
   if (values.DNI.length < 7 || values.DNI.length > 8) {
-    return window.alert("El DNI debe tener entre 7 y 8 dIgitos.");
+    return window.alert("El DNI debe tener entre 7 y 8 digitos.");
   }
   if (!licenciaValida.test(values.licencia)) {
     return window.alert("La licencia solo puede contener letras y numeros (sin simbolos).");
@@ -55,9 +55,9 @@ export const ModificarConductor = () => {
   const hoy = new Date();
   const vencimiento = new Date(values.fecha_vencimiento_licencia);
   if (isNaN(vencimiento)) {
-    return window.alert("Fecha de vencimiento inválida.");
+    return window.alert("Fecha de vencimiento invalida.");
   } else if (vencimiento < hoy) {
-    return window.alert("La licencia está vencida.");
+    return window.alert("La licencia esta vencida.");
   }
 
   

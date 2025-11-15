@@ -51,7 +51,7 @@ export const DetallesVehiculo = () => {
       <p><b>Patente:</b> {vehiculo.patente}</p>
       <p><b>Año:</b> {vehiculo.año}</p>
       <p><b>Capacidad de carga:</b> {vehiculo.capacidad_carga} kg</p>
-      <p><b>Total kilómetros recorridos:</b> {totalKms}</p>
+      <p><b>Total kilometros recorridos:</b> {totalKms}</p>
 
       <h3>Historial de viajes</h3>
       <table>

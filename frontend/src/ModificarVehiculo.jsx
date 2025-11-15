@@ -14,7 +14,7 @@ export const ModificarVehiculo = () => {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        return window.alert("Error al cargar datos del vehículo");
+        return window.alert("Error al cargar datos del vehiculo");
       }
 
       setValues(data.vehiculo);

@@ -29,8 +29,8 @@ export const DetallesViaje = () => {
       <ul>
         <li><b>ID:</b> {viaje.id}</li>
 
-        <li><b>Vehículo ID:</b> {viaje.vehiculo_id}</li>
-        <li><b>Vehículo:</b> {viaje.vehiculo_marca} {viaje.vehiculo_modelo}</li>
+        <li><b>Vehiculo ID:</b> {viaje.vehiculo_id}</li>
+        <li><b>Vehiculo:</b> {viaje.vehiculo_marca} {viaje.vehiculo_modelo}</li>
         <li><b>Patente:</b> {viaje.vehiculo_patente}</li>
 
         <li><b>Conductor ID:</b> {viaje.conductor_id}</li>
@@ -39,7 +39,7 @@ export const DetallesViaje = () => {
 
         <li><b>Origen:</b> {viaje.origen}</li>
         <li><b>Destino:</b> {viaje.destino}</li>
-        <li><b>Kilómetros:</b> {viaje.kilometros}</li>
+        <li><b>Kilometros:</b> {viaje.kilometros}</li>
         <li><b>Fecha salida:</b> {viaje.fecha_salida}</li>
         <li><b>Fecha llegada:</b> {viaje.fecha_llegada}</li>
         <li><b>Observaciones:</b> {viaje.observaciones}</li>

@@ -9,9 +9,7 @@ import { AuthPage, AuthProvider } from "./Auth.jsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Usuarios } from "./Usuarios.jsx";
-import { DetallesUsuario } from "./DetallesUsuario.jsx";
 import { CrearUsuario } from "./CrearUsuario.jsx";
-import { ModificarUsuario } from "./ModificarUsuario.jsx";
 
 import { Vehiculos } from "./Vehiculos.jsx";
 import { DetallesVehiculo } from "./DetallesVehiculo.jsx";
@@ -54,24 +52,7 @@ createRoot(document.getElementById("root")).render(
                 </AuthPage>
               }
             />
-            <Route
-              path="usuarios/:id"
-              element={
-                <AuthPage>
-                  <DetallesUsuario />
-                </AuthPage>
-              }
-            />
-            <Route
-              path="usuarios/:id/modificar"
-              element={
-                <AuthPage>
-                  <ModificarUsuario />
-                </AuthPage>
-              }
-            />
-
-           
+            {/* Vehículos */}
             <Route
               path="vehiculos"
               element={
@@ -105,7 +86,7 @@ createRoot(document.getElementById("root")).render(
               }
             />
 
-           
+            {/* Conductores */}
             <Route
               path="conductores"
               element={
